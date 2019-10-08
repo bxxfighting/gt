@@ -23,18 +23,19 @@ class Api(object):
             raise errors.NoTokenError
         return token
 
-    def _identification(self):
+    def _identification(self, request):
         if self.NEED_LOGIN:
-            self.token = self._get_token()
-            self.user_id = session.get_session(self.token)
-            if not self.user_id:
+            token = self._get_token()
+            user_id = session.get_session(token)
+            if not user_id:
                 raise errors.LoginExpiredError
+            request.user_id = user_id
 
-    def _pre_handle(self):
+    def _pre_handle(self, request):
         """
             调用具体业务方法之前，如果需要一些权限认证或者其它操作在这里实现
         """
-        self._identification()
+        self._identification(request)
 
     def _after_handle(self):
         """
@@ -50,7 +51,7 @@ class Api(object):
             method = getattr(self, request.method.lower(), None)
             if not method:
                 raise errors.MethodError
-            self._pre_handle()
+            self._pre_handle(request)
             data = method(*args, **kwargs)
             self._after_handle()
         except errors.BaseError as e:
