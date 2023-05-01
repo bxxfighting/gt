@@ -1,4 +1,4 @@
-Flask==1.0.2
+Flask==2.3.2
 Flask-Script==2.0.6
 PyJWT==1.6.4
 pytz==2018.4
